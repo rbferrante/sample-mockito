@@ -11,12 +11,29 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <aws-lambda-java-events.version>3.11.0</aws-lambda-java-events.version>
+        <aws-lambda-java-core.version>1.2.1</aws-lambda-java-core.version>
+        <aws-java-sdk-secretsmanager.version>1.12.189</aws-java-sdk-secretsmanager.version>
+        <aws.java.sdk.version>2.19.33</aws.java.sdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mockito.version>4.4.0</mockito.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <maven.clean.plugin.version>3.2.0</maven.clean.plugin.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws.java.sdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -55,29 +72,25 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven.clean.plugin.version}</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
                 <configuration>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation,unchecked</arg>
-                    </compilerArgs>
-                    <showWarnings>true</showWarnings>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
